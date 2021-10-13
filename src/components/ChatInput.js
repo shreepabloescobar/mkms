@@ -36,7 +36,8 @@ const useStyles = makeStyles((theme) => ({
 const inputBoxSchema = yup
   .object({
     message: yup.string().required(),
-  }).required();
+  })
+  .required();
 
 export const ChatInput = (props) => {
   const classes = useStyles();
@@ -61,14 +62,18 @@ export const ChatInput = (props) => {
     };
 
     axios
-      .post("http://localhost:3000/api/v1/livechat/message", messageObj)
+      .post(
+        process.env.REACT_APP_ROCKETCHAT_BASE_API_URL +
+          "http://localhost:3000/api/v1/livechat/message",
+        messageObj
+      )
       .then((res) => {
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
-    };
+  };
 
   return (
     <Box className={classes.root}>
@@ -94,40 +99,6 @@ export const ChatInput = (props) => {
             ),
           }}
         />
-        {/* <TextField
-          className={classes.message}
-          placeholder="Enter something"
-          multiline
-          maxRows={3}
-          // value={message.content}
-          name="message"
-          variant="standard"
-          // onChange={(event) => {
-          //   setMessage({ ...message, ...{ msg: event.target.value } });
-          // }}
-          InputProps={{
-            shrink: "true",
-            endAdornment: (
-              <InputAdornment>
-                <IconButton type="file">
-                  <AttachFileSharp
-                    className={classes.iconButton}
-                    onClick={handleClick}
-                  />
-                  <input
-                    type="file"
-                    ref={hiddenFileInput}
-                    onChange={handleChange}
-                    style={{ display: "none" }}
-                  />
-                </IconButton>
-                <IconButton type="submit">
-                  <SendIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        /> */}
       </form>
     </Box>
   );

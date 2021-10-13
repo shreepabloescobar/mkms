@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import ChatIcon from "@material-ui/icons/Chat";
 import { Popover, Box, Fab } from "@material-ui/core";
 import { ChatTabs } from "./ChatTabs";
-import Login from "./Login/Login";
+import Login from "./auth/login";
 
 const useStyles = makeStyles((theme) => ({
   root: {
