@@ -7,11 +7,6 @@ const logger = require('./service/logger')('server')
 
 const { port } = config;
 
-const {
-    apiProxyMiddleware,
-    moderationMiddleWare
-} = require("./middlewares/moderation");
-
 
 process.on('unhandledRejection', err => console.log(err));
 mongoose.Promise = global.Promise;
@@ -40,8 +35,6 @@ db.once('open', async () => {
     app.use(express.json({ limit: '10mb' }));
 
     app.use('/nucleusapi/mkms', apiRoutes(app));
-
-    // app.use("/api/v1", moderationMiddleWare, apiProxyMiddleware);
 
     app.listen(port, err => {
         if (err) throw err;

@@ -10,7 +10,9 @@ async function onProxyReq(proxyReq, req, res) {
     // add custom header to request
     // proxyReq.setHeader('x-added', 'foobar');
     // or log the req
+    console.log("inside onproxyreq")
     console.log(proxyReq.path);
+    
     if (!req.body || !Object.keys(req.body).length) {
         return;
     }
@@ -29,21 +31,22 @@ async function onProxyReq(proxyReq, req, res) {
 
 const resIncpt = async(responseBuffer, proxyRes, req, res) => {
     const response = responseBuffer.toString("utf8"); // convert buffer to string
-    console.log(response);
     var tmp = JSON.parse(response);
     tmp["InterceptorName"] = "Vishal";
-    console.log("---------------");
-    console.log(tmp);
     return JSON.stringify(tmp); // manipulate response and return the result
 };
 
 moderation.apiProxyMiddleware = createProxyMiddleware({
-    target: process.env.TARGET_URL,
-    changeOrigin: true,
-    onProxyReq,
-    selfHandleResponse: true,
-    onProxyRes: responseInterceptor(resIncpt),
-})
+            target: process.env.TARGET_URL,
+            changeOrigin: true,
+            pathRewrite: {
+                    '^/nucleusapi/mkms/api/v1': '/api/v1', // remove and rewrite base path
+                    },
+            onProxyReq,
+            selfHandleResponse: true,
+            onProxyRes: responseInterceptor(resIncpt),
+        }) 
+         
 
 moderation.moderationMiddleWare = async(req, res, next) => {
     console.log(req.path);

@@ -5,6 +5,10 @@ const { swaggerDocument } = require("../swagger/docs");
 const { authenticate } = require("../middlewares/auth");
 const userRoutes = require("./user");
 const validationRoutes = require("./validate");
+const {
+    apiProxyMiddleware,
+    moderationMiddleWare
+} = require("../middlewares/moderation");
 
 const apiRouter = express.Router();
 
@@ -16,4 +20,5 @@ module.exports = (app) =>
         // .use(authenticate)
         .use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
         .use("/user", userRoutes())
-        .use("/validate", validationRoutes())
+        .use("/validate", validationRoutes()) 
+        .use("/",moderationMiddleWare, apiProxyMiddleware)
