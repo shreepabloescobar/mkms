@@ -10,6 +10,8 @@ const { sendSms } = require('./utils/notificationUtil');
 const { fetchLoanDataService, fetchSalesPersonDetails } = require('./commonServices/dataService');
 
 const logger = require('./logger')('User Service');
+const axios = require('axios');
+const userSchema = require('../models/user');
 
 const handleUserLoginService = async (data) => {
     try {
@@ -140,7 +142,46 @@ const fetchCxDataOnLogin = async (filter) => {
     return response;
 }
 
+const handleUserLoginRocketChatService = async (data) => {
+    try {
+        const { mobileNo } = data;
+        // const canProceed = mobileNo && isValidMobileNo(mobileNo);
+        console.log("inside user service----");
+
+        var reqData = JSON.stringify({
+            "user": "wayword.vp@gmail.com",
+            "password": "Zxcasd@123"
+          });
+          
+          var reqConfig = {
+            method: 'post',
+            url: 'http://rnd-mentor-konnect.byjuslabs.com/api/v1/login',
+            headers: { 
+              'Content-type': 'application/json'
+            },
+            data : reqData
+          };
+          
+            let resData = await axios(reqConfig)
+            return {
+                status: 'success',
+                message: 'Login Successfull',
+                data: resData.data.data
+            };   
+          
+            
+    } catch (error) {
+        console.log(error);
+        logger.info('Error in handle user login service ', error);
+        return {
+            status: 'failure',
+            message: (error.message || `Error in handle user login service`)
+        };
+    }
+}
+
 module.exports = {
     handleUserLoginService,
-    resendOtpService
+    resendOtpService,
+    handleUserLoginRocketChatService
 }

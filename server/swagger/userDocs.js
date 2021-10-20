@@ -38,6 +38,31 @@ const userDocs = {
                 }
             }
         },
+        "/user/login-rocket-chat":{
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Users rocket chat login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/UserRocketChatLogin"
+                            },
+                            "example": {
+                                "mobileNo": "9999999999"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        }
     }
 }
 

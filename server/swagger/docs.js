@@ -12,7 +12,8 @@ const swaggerDocument = {
     },
     servers: [
         {
-            url: "http://localhost:9016/nucleusapi/mkapp",
+            // url: "http://localhost:9016/nucleusapi/mkapp",
+            url: "http://localhost:8888/nucleusapi/mkapp/",
             description: "local",
         },
         process.env.NODE_ENV == 'production' ?
@@ -61,10 +62,10 @@ const swaggerDocument = {
     consumes: ["application/json"],
     produces: ["application/json"],
     paths: {
-        ...userPaths,
+        ...userPaths
     },
     definitions: {
-        ...userDefinitions,
+        ...userDefinitions
     },
 };
 
