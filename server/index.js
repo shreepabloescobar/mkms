@@ -33,7 +33,7 @@ db.once('open', async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json({ limit: '10mb' }));
 
-  app.use('/nucleusapi/mkapp', apiRoutes(app));
+  app.use('/nucleusapi/mkms', apiRoutes(app));
 
   app.listen(port, err => {
     if (err) throw err;
