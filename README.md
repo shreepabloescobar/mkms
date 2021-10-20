@@ -20,7 +20,9 @@ microservices-mkms/client-lite> npm run dev
 
 Back-end for both lite and elite versions of application.
 
+Local URL - Request URL: http://localhost:4000/nucleusapi/mkms
 Development URL - Request URL: https://dev-nucleus.byjusorders.com/nucleusapi/mkms
+Production URL - Request URL: https://nucleus.byjusorders.com/nucleusapi/mkms
 
 Start the server
 ```

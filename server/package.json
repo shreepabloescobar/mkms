@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@byjus-orders/nexemplum": "1.0.1437",
 		"aws-sdk": "^2.929.0",
-		"axios": "^0.21.1",
+		"axios": "^0.21.4",
 		"bunyan": "^1.8.15",
 		"connect": "^3.2.0",
 		"crypto-js": "^4.0.0",
@@ -23,6 +23,7 @@
 		"form-data": "^4.0.0",
 		"fuzzball": "^2.0.2",
 		"helmet": "^4.6.0",
+		"http-proxy-middleware": "^2.0.1",
 		"json2csv": "^5.0.6",
 		"lodash": "^4.17.21",
 		"moment": "^2.29.1",
