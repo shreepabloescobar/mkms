@@ -310,3 +310,13 @@
 		}
 	}
 }
+
+.private-note {
+	.body {
+		padding: 1em;
+		background: #ffc;
+		width: 50%;
+		box-shadow: 5px 5px 7px rgba(140, 140, 140, 0.7);
+		margin: .5rem 0 .5rem 0;
+	}
+}
