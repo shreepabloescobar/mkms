@@ -13,16 +13,16 @@ const swaggerDocument = {
     servers: [
         {
             // url: "http://localhost:9016/nucleusapi/mkapp",
-            url: "http://localhost:8888/nucleusapi/mkapp/",
+            url: "http://localhost:8888/nucleusapi/mkms/",
             description: "local",
         },
         process.env.NODE_ENV == 'production' ?
             {
-                url: "https://nucleus.byjusorders.com/nucleusapi/mkapp",
+                url: "https://nucleus.byjusorders.com/nucleusapi/mkms",
                 description: "Prod",
             } :
             {
-                url: "https://dev-nucleus.byjusorders.com/nucleusapi/mkapp",
+                url: "https://dev-nucleus.byjusorders.com/nucleusapi/mkms",
                 description: "Dev",
             },
     ],
