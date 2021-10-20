@@ -54,6 +54,15 @@ Template.livechatReadOnly.events({
 
 		await callWithErrorHandling('livechat:resumeOnHold', room._id, { clientAction: true });
 	},
+
+	async 'click .js-reopen'(event, instance) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const room = instance.room.get();
+
+		await callWithErrorHandling('livechat:reOpen', room._id, { clientAction: true });
+	},
 });
 
 Template.livechatReadOnly.onCreated(function() {
