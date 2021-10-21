@@ -20,6 +20,9 @@
 			{{/if}}
 		{{/if}}
 	{{else}}
-		<p>{{_ "This_conversation_is_already_closed"}}</p>
+		<div class="rc-message-box__join">
+			{{{_ "This_conversation_is_already_closed"}}}
+			<button class="rc-button rc-button--primary rc-button--small rc-message-box__take-it-button js-reopen">{{_ "Reopen"}}</button>
+		</div>
 	{{/if}}
 </template>

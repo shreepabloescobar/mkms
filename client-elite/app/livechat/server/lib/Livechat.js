@@ -420,7 +420,11 @@ export const Livechat = {
 
 		LivechatRooms.closeByRoomId(rid, closeData);
 		LivechatInquiry.removeByRoomId(rid);
-		Subscriptions.removeByRoomId(rid);
+		if (user) {
+			Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+		} else {
+			Subscriptions.removeByRoomId(rid);
+		}
 
 		const message = {
 			t: 'livechat-close',

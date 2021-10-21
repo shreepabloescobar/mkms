@@ -14,6 +14,7 @@ import { OmnichannelSourceType } from '../../../../../definition/IRoom';
 import { Users } from '../../../../models/server';
 import { getDefaultUserFields } from '../../../../utils/server/functions/getDefaultUserFields';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
+import { QueueManager } from '../../lib/QueueManager';
 
 API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 	post() {
@@ -35,42 +36,34 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 		const guest = LivechatVisitors.findOneById(visitorId);
 
 		let room;
-		if (!roomId) {
-			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
-			if (room) {
-				return API.v1.success({ room, newRoom: false });
+		room = LivechatRooms.findOneByVisitorToken(token);
+		if (room) {
+			if (room.closedAt) {
+				Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
+				addUserToRoom(room._id, user, user);
 			}
 
-			let agent;
-			const agentObj = agentId && findAgent(agentId);
-			if (agentObj) {
-				const { username } = agentObj;
-				agent = { agentId, username };
-			}
-
-			const rid = Random.id();
-			const roomInfo = {
-				source: {
-					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
-				},
-			};
-
-			room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
-
-			addUserToRoom(room.room._id, user, user);
-			return API.v1.success(room);
+			return API.v1.success({ room, newRoom: false });
 		}
 
-		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
-		if (!room) {
-			throw new Meteor.Error('invalid-room');
+		let agent;
+		const agentObj = agentId && findAgent(agentId);
+		if (agentObj) {
+			const { username } = agentObj;
+			agent = { agentId, username };
 		}
+
+		const rid = Random.id();
+		const roomInfo = {
+			source: {
+				type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+			},
+		};
+
+		room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
 
 		addUserToRoom(room.room._id, user, user);
-
-		return API.v1.success({ room, newRoom: false });
-
-		// return API.v1.success({ ...user });
+		return API.v1.success(room);
 	},
 });
 

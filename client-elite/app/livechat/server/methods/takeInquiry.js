@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization';
-import { Users, LivechatInquiry } from '../../../models/server';
+import { Users, LivechatInquiry, LivechatRooms } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 import { userCanTakeInquiry } from '../lib/Helper';
+import { QueueManager } from '../lib/QueueManager';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 
 Meteor.methods({
 	'livechat:takeInquiry'(inquiryId, options) {
@@ -28,5 +30,21 @@ Meteor.methods({
 		};
 
 		return RoutingManager.takeInquiry(inquiry, agent, options);
+	},
+});
+
+Meteor.methods({
+	async 'livechat:reOpen'(roomId, options = { clientAction: false }) {
+		const room = await LivechatRooms.findOneById(roomId);
+		if (!room || room.t !== 'l') {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:resumeOnHold' });
+		}
+
+		const user = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
+
+		if (room.closedAt) {
+			Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
+			addUserToRoom(room._id, user, user);
+		}
 	},
 });
