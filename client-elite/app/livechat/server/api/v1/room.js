@@ -8,13 +8,13 @@ import { Messages, LivechatRooms, LivechatVisitors } from '../../../../models';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
-import { normalizeTransferredByData } from '../../lib/Helper';
+import { normalizeTransferredByData, createLivechatRoom, createLivechatInquiry } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { OmnichannelSourceType } from '../../../../../definition/IRoom';
-import { Users } from '../../../../models/server';
+import { Users, LivechatInquiry } from '../../../../models/server';
 import { getDefaultUserFields } from '../../../../utils/server/functions/getDefaultUserFields';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
-import { QueueManager } from '../../lib/QueueManager';
+import { QueueManager, queueInquiry } from '../../lib/QueueManager';
 
 API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 	post() {
@@ -28,10 +28,9 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 		check(this.queryParams, extraCheckParams);
-		const { rid: roomId, agentId, ...extraParams } = this.queryParams;
+		const { rid: roomId, ...extraParams } = this.queryParams;
 		const token = user._id;
-		// const guest = findGuest(token);
-		// const guest = { ...user, token };
+
 		const visitorId = Livechat.registerGuest({ ...user, token });
 		const guest = LivechatVisitors.findOneById(visitorId);
 
@@ -46,13 +45,6 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 			return API.v1.success({ room, newRoom: false });
 		}
 
-		let agent;
-		const agentObj = agentId && findAgent(agentId);
-		if (agentObj) {
-			const { username } = agentObj;
-			agent = { agentId, username };
-		}
-
 		const rid = Random.id();
 		const roomInfo = {
 			source: {
@@ -60,10 +52,52 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 			},
 		};
 
-		room = Promise.await(getRoom({ guest, rid, agent, roomInfo, extraParams }));
+		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
+		room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraParams));
+		LivechatRooms.updateRoomCount();
 
-		addUserToRoom(room.room._id, user, user);
-		return API.v1.success(room);
+		addUserToRoom(room._id, user, user);
+		return API.v1.success({ room, newRoom: true });
+	},
+});
+
+API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
+	post() {
+		const fields = getDefaultUserFields();
+		const user = Users.findOneById(this.userId, { fields });
+
+		const defaultCheckParams = {
+			rid: Match.Maybe(String),
+		};
+
+		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
+		check(this.queryParams, extraCheckParams);
+
+		const { rid: roomId } = this.queryParams;
+		const token = user._id;
+		const guest = LivechatVisitors.findOneById(Livechat.registerGuest({ ...user, token }));
+
+		const room = LivechatRooms.findOneById(roomId);
+		if (!room) {
+			return API.v1.failure();
+		}
+
+		if (room.closedAt) {
+			Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
+			addUserToRoom(room._id, user, user);
+
+			return API.v1.success({ room });
+		}
+
+		addUserToRoom(room._id, user, user);
+
+		const name = room.fname || guest.name || guest.username;
+		const message = {	msg: '' };
+		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid: room._id, name, guest, message }));
+
+		Promise.await(queueInquiry(room, inquiry));
+
+		return API.v1.success({ inquiry });
 	},
 });
 
