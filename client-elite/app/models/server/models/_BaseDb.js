@@ -212,6 +212,8 @@ export class BaseDb extends EventEmitter {
 		});
 
 		if (action === 'insert') {
+			if (op.o.isPrivate) { return; }
+
 			this.emit('change', {
 				action,
 				clientAction: 'inserted',
