@@ -146,29 +146,29 @@ const handleUserLoginRocketChatService = async (data) => {
     try {
         const { mobileNo } = data;
         // const canProceed = mobileNo && isValidMobileNo(mobileNo);
-        console.log("inside user service----");
-
-        var reqData = JSON.stringify({
-            "user": "wayword.vp@gmail.com",
-            "password": "Zxcasd@123"
-          });
-          
-          var reqConfig = {
-            method: 'post',
-            url: 'http://rnd-mentor-konnect.byjuslabs.com/api/v1/login',
-            headers: { 
-              'Content-type': 'application/json'
-            },
-            data : reqData
-          };
-          
-            let resData = await axios(reqConfig)
+        // console.log("inside user service----");
+        // console.log({"phoneNumber":mobileNo});
+        let usersData = JSON.parse(JSON.stringify(await userSchema.find({"phoneNumber":mobileNo})))
+        // console.log("usersData-------",usersData);
+        for(let i=0; i<usersData.length; i++){
+            let tep = await loginUserToRocketChat(usersData[i]);
+            // console.log(tep.data.data);
+            // console.log("=================");
+            // console.log(usersData[i])
+            usersData[i]['LoginDetails'] = tep.data.data
+            let chld =  await getChannelList(usersData[i]);
+            // console.log(chld.data);
+             usersData[i]['channelListDetails'] = chld.data.channels
+        }
+        
+        // console.log("-----------------------------------------------------------")
+        // console.log(usersData);       
+        
             return {
                 status: 'success',
                 message: 'Login Successfull',
-                data: resData.data.data
-            };   
-          
+                data: usersData                
+            };             
             
     } catch (error) {
         console.log(error);
@@ -179,9 +179,43 @@ const handleUserLoginRocketChatService = async (data) => {
         };
     }
 }
+const loginUserToRocketChat = async(ud)=>{
+    var reqData = JSON.stringify({
+            "user": ud['emails'][0]['address'],
+            "password": "zxcasd"
+          });
+          
+          var reqConfig = {
+            method: 'post',
+            url: 'http://localhost:3000/api/v1/login',
+            headers: { 
+              'Content-type': 'application/json'
+            },
+            data : reqData
+          };
+          
+            return await axios(reqConfig);
+}
+const getChannelList = async(cl)=>{
+    var reqConfig = {
+        method: 'get',
+        url: 'http://localhost:3000/api/v1/channels.list',
+        headers: { 
+            'X-Auth-Token': cl['LoginDetails']['authToken'], 
+            'X-User-Id': cl['LoginDetails']['userId']
+        }
+    };
+    return await axios(reqConfig)
+}
+const createRocketChatUserService = async(data)=>{
+    let creatRes = new userSchema(data);
+    let resData = await creatRes.save();
+    console.log(resData);
+}
 
 module.exports = {
     handleUserLoginService,
     resendOtpService,
-    handleUserLoginRocketChatService
+    handleUserLoginRocketChatService,
+    createRocketChatUserService
 }

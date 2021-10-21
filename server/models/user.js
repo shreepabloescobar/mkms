@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 let userSchema = new Schema({
 
-    createdAt : {
+    _id : {
+        type:String
+    },createdAt : {
         type:Date
     },
     services : {
@@ -46,7 +48,7 @@ let userSchema = new Schema({
         type : Array
     },
     phoneNumber : {
-        type : Array
+        type : Number
     }
 }, {
     collection: 'users'
