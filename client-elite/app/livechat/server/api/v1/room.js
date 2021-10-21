@@ -19,19 +19,20 @@ import { QueueManager, queueInquiry } from '../../lib/QueueManager';
 API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 	post() {
 		const fields = getDefaultUserFields();
-		const user = Users.findOneById(this.userId, { fields });
+		const sessionUser = Users.findOneById(this.userId, { fields });
 
 		const defaultCheckParams = {
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
+			users: Match.Maybe(Array),
 		};
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 		check(this.queryParams, extraCheckParams);
-		const { rid: roomId, ...extraParams } = this.queryParams;
-		const token = user._id;
+		const { rid: roomId, users: usernames, ...extraParams } = this.bodyParams;
+		const token = sessionUser._id;
 
-		const visitorId = Livechat.registerGuest({ ...user, token });
+		const visitorId = Livechat.registerGuest({ ...sessionUser, token });
 		const guest = LivechatVisitors.findOneById(visitorId);
 
 		let room;
@@ -39,9 +40,9 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 		if (room) {
 			if (room.closedAt) {
 				Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
-				addUserToRoom(room._id, user, user);
+				// addUserToRoom(room._id, sessionUser, sessionUser);
 			}
-
+			Users.findByUsernamesIgnoringCase(usernames).forEach((user) => addUserToRoom(room._id, user, user));
 			return API.v1.success({ room, newRoom: false });
 		}
 
@@ -56,7 +57,8 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 		room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraParams));
 		LivechatRooms.updateRoomCount();
 
-		addUserToRoom(room._id, user, user);
+		Users.findByUsernamesIgnoringCase(usernames).forEach((user) => addUserToRoom(room._id, user, user));
+		// addUserToRoom(room._id, user, user);
 		return API.v1.success({ room, newRoom: true });
 	},
 });
@@ -73,7 +75,7 @@ API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 		check(this.queryParams, extraCheckParams);
 
-		const { rid: roomId } = this.queryParams;
+		const { rid: roomId } = this.bodyParams;
 		const token = user._id;
 		const guest = LivechatVisitors.findOneById(Livechat.registerGuest({ ...user, token }));
 
