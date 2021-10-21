@@ -1,37 +1,18 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import SendIcon from "@material-ui/icons/Send";
 import TextField from "@material-ui/core/TextField";
-import axios from "axios";
 import * as yup from "yup";
 import { Box, InputAdornment } from "@material-ui/core";
 // import AttachFileSharp from "@material-ui/icons/AttachFileSharp";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    alignItems: "center",
-    width: "100%",
-    borderTop: "1px solid lightgray !important",
-  },
-  iconButton: {
-    transform: "rotate(45deg)",
-  },
-  message: {
-    padding: "15px 1px",
-    width: "100%",
-    overflow: "hidden",
-    borderBottom: "none !important",
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important",
-    },
-  },
-}));
+import { realTimeAPI } from "api";
+import { createToken, sendMessage } from "lib/helpers";
+import { messageInputStyles } from "./messageInput.styles";
+import Cookies from "js-cookie";
+import axios from "axios";
+import { sendMessageService } from "services/chatServices";
 
 const inputBoxSchema = yup
   .object({
@@ -39,9 +20,9 @@ const inputBoxSchema = yup
   })
   .required();
 
-export const ChatInput = (props) => {
-  const classes = useStyles();
-  const { roomId, roomToken } = props;
+export const MessageInput = (props) => {
+  const classes = messageInputStyles();
+  const { roomId, token, rocketWebSocket } = props;
 
   const {
     register,
@@ -55,24 +36,16 @@ export const ChatInput = (props) => {
   const onSubmit = (data) => {
     const { message } = data;
     reset();
-    const messageObj = {
-      msg: message,
-      token: roomToken,
-      rid: roomId,
-    };
-
-    axios
-      .post(
-        process.env.REACT_APP_ROCKETCHAT_BASE_API_URL +
-          "http://localhost:3000/api/v1/livechat/message",
-        messageObj
-      )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const method = "sendMessage";
+    const params = [{ _id: createToken(), rid: roomId, msg: message }];
+    realTimeAPI.connectToServer().subscribe((res) => console.log(res));
+    realTimeAPI.loginWithAuthToken(Cookies.get("auth_token"));
+    realTimeAPI
+      .callMethod(method, ...params)
+      .subscribe((res) => console.log(res));
+    realTimeAPI.onMessage((res) => {
+      console.log("on messaege res : ", res);
+    });
   };
 
   return (
@@ -91,7 +64,7 @@ export const ChatInput = (props) => {
           InputProps={{
             shrink: "true",
             endAdornment: (
-              <InputAdornment>
+              <InputAdornment position="end">
                 <IconButton type="submit">
                   <SendIcon />
                 </IconButton>

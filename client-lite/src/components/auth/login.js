@@ -10,12 +10,12 @@ import {
 } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+//
 import ChatContext from "store/ChatContext";
 import { loginUseStyles } from "./loginStyles";
 import { loginSchema } from "./loginValidation";
-import { login } from "api";
-import { getUserData } from "helperFucntions";
+import { getUserData, storeTokenInCookie } from "lib/helpers";
+import { login } from "services/authServices";
 
 const Login = (props) => {
   const classes = loginUseStyles();
@@ -39,10 +39,13 @@ const Login = (props) => {
 
       const userObject = await login(useremail, password);
       const userData = getUserData(userObject);
+      storeTokenInCookie(userData.authToken, userData.userId);
       userLoginHandler(userData);
+
       setIsLoading(false);
+      props.login(true);
     } catch (error) {
-      setLoginError(error.message);
+      setLoginError(error.statusText);
       setIsLoading(false);
     }
   };
@@ -52,7 +55,6 @@ const Login = (props) => {
     const { email, password } = data;
     reset();
     loginHandler(email, password);
-    props.login(true);
   };
 
   return (
@@ -130,4 +132,5 @@ const Login = (props) => {
     </Container>
   );
 };
+
 export default Login;

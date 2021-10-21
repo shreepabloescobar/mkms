@@ -7,3 +7,5 @@ export const LIVECHAT_QUEUED_CHATS_API = "/api/v1/livechat/inquiries.queued";
 export const LIVECHAT_ROOMS_API = "/api/v1/livechat/rooms";
 export const LIVECHAT_MESSAGES_API = "/api/v1/livechat/messages.history/";
 export const AGENT_INFO = "/api/v1/livechat/users/agent/";
+export const TAKE_QUEUE_CHAT = "/api/v1/livechat/inquiries.take";
+export const SEND_MESSAGE = "/api/v1/chat.sendMessage";
