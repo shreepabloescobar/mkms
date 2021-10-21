@@ -1,7 +1,11 @@
 const { userDocs } = require("./userDocs");
 const { validateDocs } = require("./validateDocs");
+const { moderatorDocs } = require("./moderatorDocs");
+
 
 const { paths: userPaths, definitions: userDefinitions } = userDocs;
+const { paths: moderatorPaths, definitions: moderatorDefinitions } = moderatorDocs;
+
 
 const swaggerDocument = {
     openapi: "3.0.0",
@@ -12,8 +16,7 @@ const swaggerDocument = {
     },
     servers: [
         {
-            // url: "http://localhost:9016/nucleusapi/mkapp",
-            url: "http://localhost:8888/nucleusapi/mkms/",
+            url: "http://localhost:4000/nucleusapi/mkms",
             description: "local",
         },
         process.env.NODE_ENV == 'production' ?
@@ -62,10 +65,10 @@ const swaggerDocument = {
     consumes: ["application/json"],
     produces: ["application/json"],
     paths: {
-        ...userPaths
+        ...userPaths, ...moderatorPaths,
     },
     definitions: {
-        ...userDefinitions
+        ...userDefinitions, ...moderatorDefinitions,
     },
 };
 
