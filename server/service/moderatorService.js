@@ -179,6 +179,7 @@ async function processImageOCR(mediaPath) {
         var result = {
             status: 200,
             nsfw: false,
+            message: "success",
             media_path: mediaPath
         };
         var options = {
