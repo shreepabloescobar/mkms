@@ -26,8 +26,7 @@ curl https://install.meteor.com/ | sh
 
 ### Build Comments
 
-sudo mkdir /var/www/rocket.chat
-sudo chmod +x /var/www/rocket.chat
-sudo chown -R username /var/www/rocket.chat
-#go to server folder location and run 
-meteor build --server-only --directory /var/www/rocket.chat
+- sudo mkdir /var/www/rocket.chat
+- sudo chmod +x /var/www/rocket.chat
+- sudo chown -R username /var/www/rocket.chat
+- meteor build --server-only --directory /var/www/rocket.chat
