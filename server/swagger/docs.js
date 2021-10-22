@@ -1,7 +1,11 @@
 const { userDocs } = require("./userDocs");
 const { validateDocs } = require("./validateDocs");
+const { tllmsDocs } = require("./tllmsDocs");
+const { sfDocs } = require("./sfDocs");
 
 const { paths: userPaths, definitions: userDefinitions } = userDocs;
+const { paths: tllmsPaths, definitions: tllmsDefinitions } = tllmsDocs;
+const { paths: sfPaths, definitions: sfDefinitions } = sfDocs;
 
 const swaggerDocument = {
     openapi: "3.0.0",
@@ -39,7 +43,13 @@ const swaggerDocument = {
             name: "Chat Assignment",
             description: "API to help mentors for chat assignment",
         },
-
+        {
+            name: "Tllms",
+            description: "API to help mentors for chat assignment",
+        }, {
+            name: "Salesforce",
+            description: " API to interact with Salesforce CRM"
+        }
     ],
     components: {
         securitySchemes: {
@@ -67,10 +77,14 @@ const swaggerDocument = {
     consumes: ["application/json"],
     produces: ["application/json"],
     paths: {
-        ...userPaths
+        ...userPaths,
+        ...tllmsPaths,
+        ...sfPaths
     },
     definitions: {
-        ...userDefinitions
+        ...userDefinitions,
+        ...tllmsDefinitions,
+        ...sfDefinitions
     },
 };
 
