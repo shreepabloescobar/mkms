@@ -35,6 +35,11 @@ const swaggerDocument = {
             name: "Moderators",
             description: "API to performan screening activities on students initiated chats",
         },
+        {
+            name: "Chat Assignment",
+            description: "API to help mentors for chat assignment",
+        },
+
     ],
     components: {
         securitySchemes: {
