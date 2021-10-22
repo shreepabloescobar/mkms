@@ -1,8 +1,11 @@
 const moment = require('moment');
+const axios = require('axios');
 
 const { OtpTransaction, Cibil } = require('@byjus-orders/nexemplum/lms');
 
 const { updateWorkflowStatusService, fetchSalesPersonDetails, fetchNachType, fetchPanPresent, fetchProductName } = require('./commonServices/dataService');
+
+const BASE_URL = process.env.OTP_VALIDATION_URL
 
 const updateOtpVerificationStatusService = async (data) => {
     try {
@@ -70,9 +73,45 @@ const validateOtpService = async (data) => {
         };
     }
 }
+const headers = {
+    'Content-Type': 'application/json',
+    'client_id': process.env.CLIENT_ID,
+    'client_secret': process.env.CLIENT_SECRET,
+}; 
+const requestOtpService = async (mobileNo) => {
+        await axios.post(BASE_URL+"/user/login",{
+            "mobileNo":mobileNo
+        },{
+            headers: headers
+        }).then((res)=> {
+                if(res.data.status == "failure")
+                    return {"errorCode" : 401,"errorDesc":"Unauthorized","errorDetails":""}
+                else
+                    return {"status" : 200,"message":"OTP successfully sent to your registered mobile number","appId":res.data.data.appId,"mobileNo":mobileNo}
+        }).catch((error) => {
+                return {"errorCode" : 500, "errorDesc":"Error Occured","errorDetails":""}
+        })
+}
+
+const validateOtpService = async (data) => {
+    await axios.post(BASE_URL+"/validate/otp",{
+        "appId" : data.appId,
+        "otp" : data.OTP
+    },{
+        headers: headers
+    }).then((res)=> {
+            if(res.data.status == "failure")
+                return {"errorCode" : 401,"errorDesc":"Unauthorized","errorDetails":""}
+            else
+                return {"status" : 200,"message":"OTP validated"}
+    }).catch((error) => {
+            return {"errorCode" : 500, "errorDesc":"Error Occured","errorDetails":""}
+    })
+}
 
 module.exports = {
     updateOtpVerificationStatusService,
-    validateOtpService
-
+    validateOtpService,
+    requestOtpService,
+    validateOtpService,
 }

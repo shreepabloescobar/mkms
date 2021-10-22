@@ -63,6 +63,17 @@ const userDocs = {
                 }
             }
         }
+    },
+    "definitions":{
+        "UserLogin":{
+            "properties":{
+                "mobileNo":{
+                    "required":["true"],
+                    "type":"number",
+                    "example":"9999999999"
+                }
+            }
+        }
     }
 }
 
