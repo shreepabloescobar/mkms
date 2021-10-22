@@ -1,6 +1,6 @@
 const logger = require('./logger')('Moderator Service');
 const request = require("request");
-const whitelist = require("./utils/whitelist");
+const wl = require("./utils/whitelist");
 const fs = require("fs");
 const mc = require("./utils/moderatorClasses");
 const { isEmpty } = require('lodash');
@@ -21,22 +21,26 @@ exports.processTextModeration = (textData) => {
             };
 
             //Check text has any number (positive, or negative)
-            if(!isNaN(textData)){
-                return resolve(result);
+            if (!isNaN(textData)) {
+                return resolve(result); /*text is safe for the work*/
             }
 
             //Check text has any single alphabet
-            if(textData.match(/^[A-Za-z]+$/) && textData.length == 1){
-                return resolve(result);
+            if (textData.match(/^[A-Za-z]+$/) && textData.length == 1) {
+                return resolve(result); /*text is safe for the work*/
+            }
+
+            //Check text has only special character
+            if (textData.match(/^[^a-zA-Z0-9]+$/)) {
+                return resolve(result); /*text is safe for the work*/
             }
 
             //Check text is available in the whitelist
-            const whiteListResult = await whitelist.TEXT.findIndex(item => textData.toLowerCase() === item.toLowerCase());
-
-            //If yes return that text is safe for the work
+            const whiteListResult = await wl.TEXT.findIndex(item => textData.toLowerCase() === item.toLowerCase());
             if (whiteListResult > 0) {
-                return resolve(result);
+                return resolve(result); /*text is safe for the work*/
             }
+
 
             //If text is long divide into 1024 character each
             const textDataArray = textData.match(/(.|[\r\1024]){1,1024}/g);
