@@ -86,19 +86,26 @@ API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
 			return API.v1.failure();
 		}
 
+		let inquiry;
 		if (room.closedAt) {
 			Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
 			addUserToRoom(room._id, user, user);
+			inquiry = LivechatInquiry.findOneByRoomId(room._id);
 
-			return API.v1.success({ room });
+			return API.v1.success({ inquiry });
 		}
 
 		addUserToRoom(room._id, user, user);
 
 		const name = room.fname || guest.name || guest.username;
 		const message = {	msg: '' };
-		const inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid: room._id, name, guest, message }));
 
+		inquiry = LivechatInquiry.findOneByRoomId(room._id);
+		if (inquiry) {
+			return API.v1.success({ inquiry });
+		}
+
+		inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid: room._id, name, guest, message }));
 		Promise.await(queueInquiry(room, inquiry));
 
 		return API.v1.success({ inquiry });
