@@ -20,6 +20,16 @@ exports.processTextModeration = (textData) => {
                 original_text: textData
             };
 
+            //Check text has any number (positive, or negative)
+            if(!isNaN(textData)){
+                return resolve(result);
+            }
+
+            //Check text has any single alphabet
+            if(textData.match(/^[A-Za-z]+$/) && textData.length == 1){
+                return resolve(result);
+            }
+
             //Check text is available in the whitelist
             const whiteListResult = await whitelist.TEXT.findIndex(item => textData.toLowerCase() === item.toLowerCase());
 
@@ -71,8 +81,6 @@ exports.processTextModeration = (textData) => {
                     return resolve(result);
                 });
             });
-
-
         } catch (error) {
             logger.info("Error in text moderation api", error);
             result.nsfw = true;
@@ -165,7 +173,6 @@ async function processImage(mediaPath) {
         });
         var form = formRequest.form();
         form.append('media', fs.createReadStream(mediaPath));
-
     });
 }
 
@@ -222,6 +229,5 @@ async function processImageOCR(mediaPath) {
         });
         var form2 = formRequest2.form();
         form2.append('media', fs.createReadStream(mediaPath));
-
     });
 }
