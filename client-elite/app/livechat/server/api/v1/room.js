@@ -67,6 +67,7 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 
 API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
 	post() {
+		const now = new Date();
 		const fields = getDefaultUserFields();
 		const user = Users.findOneById(this.userId, { fields });
 
@@ -90,6 +91,7 @@ API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
 		if (room.closedAt) {
 			Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
 			addUserToRoom(room._id, user, user);
+			Messages.createRaiseHandByUserWithRoomIdAndUser(room._id, user, { ts: now });
 			inquiry = LivechatInquiry.findOneByRoomId(room._id);
 
 			return API.v1.success({ inquiry });
@@ -107,6 +109,7 @@ API.v1.addRoute('livechat/room/raiseInquiry', { authRequired: true }, {
 
 		inquiry = LivechatInquiry.findOneById(createLivechatInquiry({ rid: room._id, name, guest, message }));
 		Promise.await(queueInquiry(room, inquiry));
+		Messages.createRaiseHandByUserWithRoomIdAndUser(room._id, user, { ts: now });
 
 		return API.v1.success({ inquiry });
 	},
