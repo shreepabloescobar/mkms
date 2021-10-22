@@ -116,17 +116,11 @@ export const RoutingManager = {
 			inquiry.department = departmentId;
 		}
 
-		const { servedBy, responseBy } = room;
-		let ignoreUser;
-		if (responseBy) {
-			const visitor = LivechatVisitors.findOne({ _id: responseBy._id });
-			ignoreUser = { _id: visitor.token };
-		}
-
+		const { servedBy } = room;
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${ inquiry._id }`);
 			LivechatRooms.removeAgentByRoomId(rid);
-			this.removeAllRoomSubscriptions(room, ignoreUser);
+			removeAgentFromSubscription(room._id, servedBy);
 			dispatchAgentDelegated(rid, null);
 		}
 
