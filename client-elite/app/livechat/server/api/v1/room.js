@@ -25,7 +25,7 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 			rid: Match.Maybe(String),
 			agentId: Match.Maybe(String),
 			users: Match.Maybe(Array),
-			roomName: String,
+			roomName: Match.Maybe(String),
 		};
 
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
@@ -33,7 +33,12 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 
 		const { rid: roomId, users: usernames, roomName, ...extraParams } = this.bodyParams;
 		const token = sessionUser._id;
-		const visitorId = Livechat.registerGuest({ ...sessionUser, token });
+		const guestName = roomName ? { name: roomName } : {};
+		const visitorId = Livechat.registerGuest({
+			...sessionUser,
+			token,
+			...guestName,
+		});
 		const guest = LivechatVisitors.findOneById(visitorId);
 
 		let room;
@@ -49,7 +54,7 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 
 		const rid = Random.id();
 		const roomInfo = {
-			fname: roomName,
+			fname: roomName || sessionUser.name,
 			source: {
 				type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 			},
