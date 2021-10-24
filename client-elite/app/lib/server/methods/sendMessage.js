@@ -13,6 +13,7 @@ import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { api } from '../../../../server/sdk/api';
+import { QueueManager } from '../../../livechat/server/lib/QueueManager';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {
@@ -76,7 +77,11 @@ export function executeSendMessage(uid, message) {
 		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return sendMessage(user, message, room, false);
+		const sentMessage = sendMessage(user, message, room, false);
+		if (room.closedAt) {
+			Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
+		}
+		return sentMessage;
 	} catch (error) {
 		SystemLogger.error('Error sending message:', error);
 
