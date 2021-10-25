@@ -5,6 +5,7 @@ const { swaggerDocument } = require("../swagger/docs");
 const { authenticate } = require("../middlewares/auth");
 const userRoutes = require("./user");
 const validationRoutes = require("./validate");
+const countryCodesListRoutes = require("./countryCodesList")
 const {
     apiProxyMiddleware,
     moderationMiddleWare
@@ -20,5 +21,6 @@ module.exports = (app) =>
         // .use(authenticate)
         .use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
         .use("/user", userRoutes())
-        .use("/validate", validationRoutes()) 
+        .use("/validate", validationRoutes())
+        .use("/getCountryCodesList",countryCodesListRoutes())
         .use("/",moderationMiddleWare, apiProxyMiddleware)
