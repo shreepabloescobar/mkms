@@ -40,6 +40,10 @@ db.once('open', async () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json({ limit: '10mb' }));
 
+    const { setupSFToken } = require("./src/util");
+    const sfClient = await setupSFToken();
+    global.sfClient = sfClient;
+
     app.use('/nucleusapi/mkms', apiRoutes(app));
 
     app.listen(port, err => {
