@@ -7,9 +7,6 @@ const { paths: userPaths, definitions: userDefinitions } = userDocs;
 const { paths: tllmsPaths, definitions: tllmsDefinitions } = tllmsDocs;
 const { paths: sfPaths, definitions: sfDefinitions } = sfDocs;
 const { moderatorDocs } = require("./moderatorDocs");
-
-
-const { paths: userPaths, definitions: userDefinitions } = userDocs;
 const { paths: moderatorPaths, definitions: moderatorDefinitions } = moderatorDocs;
 
 
