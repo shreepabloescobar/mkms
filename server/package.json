@@ -11,6 +11,7 @@
 	"private": true,
 	"dependencies": {
 		"@byjus-orders/nexemplum": "1.0.1348",
+		"@byjus-orders/tyrion-plugins": "^1.1.247",
 		"aws-sdk": "^2.929.0",
 		"axios": "^0.21.4",
 		"bunyan": "^1.8.15",
