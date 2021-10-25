@@ -10,7 +10,7 @@
 	},
 	"private": true,
 	"dependencies": {
-		"@byjus-orders/nexemplum": "1.0.1437",
+		"@byjus-orders/nexemplum": "1.0.1348",
 		"aws-sdk": "^2.929.0",
 		"axios": "^0.21.4",
 		"bunyan": "^1.8.15",
