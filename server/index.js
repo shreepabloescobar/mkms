@@ -1,12 +1,12 @@
 const express = require('express');
 var helmet = require('helmet');
+const MongoClient = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 
 const config = require('./config/environment');
 const logger = require('./service/logger')('server')
 
 const { port } = config;
-
 
 process.on('unhandledRejection', err => console.log(err));
 mongoose.Promise = global.Promise;
@@ -26,6 +26,12 @@ db.on('error', err => {
 
 db.once('open', async () => {
     console.log('Connected To', config.db);
+    const client = await MongoClient.connect(config.db, { useUnifiedTopology: true });
+    mongoose.leado = await mongoose.createConnection(config.db, mongooseOptions);
+    mongoose.nucleus = await mongoose.createConnection(config.db, mongooseOptions);
+    mongoose.friendlyPotato = await mongoose.createConnection(config.db, mongooseOptions);
+
+    global.byjus = { nativeClient: client };
 
     const apiRoutes = require('./routes/routes');
     const app = express();

@@ -4,10 +4,6 @@ const router = Router({ mergeParams: true });
 const controller = require('../controllers/user');
 
 module.exports = () => {
-	router.post('/login', controller.handleUserLogin);
-	router.post('/login-rocket-chat', controller.handleUserLoginRocketChat);
-	router.get('/resendOtp/:appId', controller.resendOtp);
-	router.get('/welcome', controller.welcome);
-	router.post('/welcomePost', controller.welcomePost);
+	router.post('/getAgentDetails', controller.getAgentDetails);
 	return router;
 }
