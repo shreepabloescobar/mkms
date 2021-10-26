@@ -51,7 +51,8 @@ moderation.apiProxyMiddleware = createProxyMiddleware({
 moderation.moderationMiddleWare = async(req, res, next) => {
     console.log(req.path);
     // if it is the route to post message on channel only then moderation logic will trigger
-    if (req.path.includes("/chat.postMessage")) {
+    
+    if (req.path.includes("/chat.postMessage")&&req.body['typeOfChannel']=="group") {
         try {
             return new Promise((resolve, reject) => {
                 moderatorService.checkTextModeration(req,res)

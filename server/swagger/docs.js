@@ -1,7 +1,8 @@
 const { userDocs } = require("./userDocs");
 const { validateDocs } = require("./validateDocs");
-
+const { subBatchDocs } = require("./subBatchDocs");  
 const { paths: userPaths, definitions: userDefinitions } = userDocs;
+const { paths: subBatchPaths, definitions: subBatchDefinitions} = subBatchDocs;
 
 const swaggerDocument = {
     openapi: "3.0.0",
@@ -35,6 +36,10 @@ const swaggerDocument = {
             name: "Moderators",
             description: "API to performan screening activities on students initiated chats",
         },
+        {
+            name: "Sub-Batch",
+            description:"API for sub-batch creation , updation , retrival and deletion."
+        }
     ],
     components: {
         securitySchemes: {
@@ -62,10 +67,12 @@ const swaggerDocument = {
     consumes: ["application/json"],
     produces: ["application/json"],
     paths: {
-        ...userPaths
+        ...userPaths,
+        ...subBatchPaths
     },
     definitions: {
-        ...userDefinitions
+        ...userDefinitions,
+        ...subBatchDefinitions
     },
 };
 

@@ -24,7 +24,23 @@ const formatDateOfBirth = (value) => {
     return newValue;
 };
 
+const formatDateYMD = (value) => {
+    let newValue = "";
+    if (moment(value, "YYYYMMDD").isValid()) {
+        newValue = moment(value, "YYYYMMDD").format("YYYY-MM-DD");
+    }
+    else if (moment(value, "YYYY-MM-DD").isValid()) {
+        newValue = moment(value, "YYYY-MM-DD").format("YYYY-MM-DD");
+    }
+    else if (moment(value, "YYYY/MM/DD").isValid()) {
+        newValue = moment(value, "YYYY/MM/DD").format("YYYY-MM-DD");
+    }
+
+    return newValue;
+};
+
 module.exports = {
     generateOtp,
-    formatDateOfBirth
+    formatDateOfBirth,
+    formatDateYMD
 }
