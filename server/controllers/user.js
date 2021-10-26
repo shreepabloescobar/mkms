@@ -4,6 +4,11 @@ const {
   handleUserLoginRocketChatService,
   createRocketChatUserService,
 } = require("../service/userService");
+
+const {
+  createNew
+} = require("../service/newUserService");
+
 const logger = require("../service/logger")("User");
 
 const UserSchema = require('../models/user')
@@ -140,6 +145,17 @@ const getAllProfiles = async (req, res) => {
   }
 };
 
+const addNewUser = async (req,res) => {
+    try{
+      console.log("Adding New User")
+      createNew();
+      return res.status(200).json({status:"OK"})
+    }catch(err){
+      console.log("Error",err)
+    }
+}
+
+
 module.exports = {
   handleUserLogin,
   createRocketChatUser,
@@ -148,4 +164,5 @@ module.exports = {
   welcome,
   welcomePost,
   getAllProfiles,
+  addNewUser,
 };

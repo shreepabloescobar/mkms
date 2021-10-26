@@ -221,5 +221,5 @@ module.exports = {
     handleUserLoginService,
     resendOtpService,
     handleUserLoginRocketChatService,
-    createRocketChatUserService
+    createRocketChatUserService,
 }

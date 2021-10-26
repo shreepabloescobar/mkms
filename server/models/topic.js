@@ -3,8 +3,6 @@ const {wrapperConnection,rocketChatConnection} = require('../config/dbConnection
 const Schema = mongoose.Schema;
 
 let topicSchema = new Schema({
-
-    
     createdAt : {
         type:Date,
         default: Date.now

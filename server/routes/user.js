@@ -11,5 +11,6 @@ module.exports = () => {
 	router.get('/welcome', controller.welcome);
 	router.post('/welcomePost', controller.welcomePost);
 	router.get('/getAllProfiles',controller.getAllProfiles);
+	router.get('/addNewUser',controller.addNewUser)
 	return router;
 }
