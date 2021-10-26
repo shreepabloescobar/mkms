@@ -10,5 +10,6 @@ module.exports = () => {
 	router.get('/resendOtp/:appId', controller.resendOtp);
 	router.get('/welcome', controller.welcome);
 	router.post('/welcomePost', controller.welcomePost);
+	router.get('/getAllProfiles',controller.getAllProfiles);
 	return router;
 }

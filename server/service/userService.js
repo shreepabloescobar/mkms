@@ -180,10 +180,13 @@ const handleUserLoginRocketChatService = async (data) => {
         };
     }
 }
-const loginUserToRocketChat = async(ud)=>{
+
+//const 
+
+const loginUserToRocketChat = async(ud)=> {
     var reqData = JSON.stringify({
             "user": ud['emails'][0]['address'],
-            "password": "zxcasd"
+            "password": "RocketChat@123"
           });
           
           var reqConfig = {
