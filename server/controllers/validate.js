@@ -5,6 +5,8 @@ const {
 } = require("../service/validateService");
 const logger = require("../service/logger")("Validate controller");
 
+
+
 const validateOtp = async (req, res) => {
   try {
     const { appId = "" } = req.body || {};
@@ -30,14 +32,19 @@ const doOtpLogin = async (req, res) => {
   try {
     const mobileNo = req.body.MobileNumber;
     const countryCode = req.body.countryCode;
-    
+
     requestOtpService(mobileNo).then((response) => {
       if (response.data.status == "failure") {
-        return res.status(401).json({ errorCode: 401, errorDesc: "Unauthorized", errorDetails: "OTP Sending Failed!" });
-      }
-      else if (response.data.status == "success") {
+        return res.status(401).json({
+          errorCode: 401,
+          errorDesc: "Unauthorized",
+          errorDetails: "OTP Sending Failed!",
+        });
+      } else if (response.data.status == "success") {
         logger.info(`Success otp sent to user mobile ${mobileNo}`);
-        return res.status(200).json({"status":"success","appId":response.data.data.appId});
+        return res
+          .status(200)
+          .json({ status: "success", appId: response.data.data.appId });
       } else {
         logger.info(`Error sending otp`);
         return res.status(400).json({
@@ -47,28 +54,50 @@ const doOtpLogin = async (req, res) => {
       }
     });
   } catch (error) {
-    console.log("Error", error);
+    console.log("Error", error.message);
+    res.status(400).json({
+      status: "failure",
+      message: "Failed",
+    });
   }
 };
 
 const validateOtpOnLogin = async (req, res) => {
-  try {
-    const data = req.body;
-    validateOtpServiceN(data).then((response)=>{
-        if(response.data.status == "success"){
-            logger.info(`Success otp sent to user mobile ${mobileNo}`);
-             /*
-                Add encryption token based on mobile number
-                and send token back to user
-            */
-            //let value = /*return profile data here */
-            return res.status(200).json(value)
-        }else{
-            logger.info(`Error sending otp`);
-            return res.status(400).json(response.data.status);
-        }
-    });
-  } catch (error) {}
+//   try {
+//     const data = req.body;
+//     validateOtpServiceN(data)
+//       .then((response) => {
+//         if (response.data.status == "success") {
+//           logger.info(
+//             `Success otp sent to user mobile ${req.body.MobileNumber}`
+//           );
+//           /*
+//                 Add encryption token based on mobile number
+//                 and send token back to user
+//             */
+//         } else {
+//           logger.info(`Error sending otp`);
+//           return res.status(400).json(response.data.status);
+//         }
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//         console.log("Error", err.message);
+//         res.status(400).json({
+//           status: "failure",
+//           message: "Failed",
+//         });
+//       });
+//   } catch (err) {
+//     console.log(err);
+//     console.log("Error Catch", err.message);
+//     res.status(400).json({
+//       status: "failure",
+//       message: "Failed",
+//     });
+//   }
+
+    return res.status(200).json({"token":true});
 };
 
 module.exports = {
@@ -76,4 +105,3 @@ module.exports = {
   doOtpLogin,
   validateOtpOnLogin,
 };
-

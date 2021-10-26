@@ -107,17 +107,18 @@ const requestOtpService = async (mobileNo) => {
 };
 
 const validateOtpServiceN = async (data) => {
-  const returnData = axios.post(
-    BASE_URL + "/validate/otp",
+  const returnData = 
+  await axios.post(
+    "https://dev-nucleus.byjusorders.com/nucleusapi/payapp/validate/otp",
     {
-      appId: data.appId,
-      otp: data.OTP,
+      "appId": data.appId,
+      "otp": data.otp
     },
     {
       headers: headers,
     }
   );
-  return returnData;
+return returnData;
 };
 
 module.exports = {
