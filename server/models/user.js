@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const {wrapperConnection,rocketChatConnection} = require('../config/dbConnection'); 
 const Schema = mongoose.Schema;
 
 let userSchema = new Schema({
@@ -54,4 +55,8 @@ let userSchema = new Schema({
     collection: 'users'
 });
 
-module.exports = mongoose.model('user',userSchema)
+
+const userModel = rocketChatConnection.model('user', userSchema);
+
+module.exports = userModel 
+// module.exports = mongoose.model('user',userSchema)

@@ -11,7 +11,8 @@ const { fetchLoanDataService, fetchSalesPersonDetails } = require('./commonServi
 
 const logger = require('./logger')('User Service');
 const axios = require('axios');
-const userSchema = require('../models/user');
+// const userSchema = require('../models/user');
+const userModel = require('../models/user');
 
 const handleUserLoginService = async (data) => {
     try {
@@ -148,7 +149,7 @@ const handleUserLoginRocketChatService = async (data) => {
         // const canProceed = mobileNo && isValidMobileNo(mobileNo);
         // console.log("inside user service----");
         // console.log({"phoneNumber":mobileNo});
-        let usersData = JSON.parse(JSON.stringify(await userSchema.find({"phoneNumber":mobileNo})))
+        let usersData = JSON.parse(JSON.stringify(await userModel.find({"phoneNumber":mobileNo})))
         // console.log("usersData-------",usersData);
         for(let i=0; i<usersData.length; i++){
             let tep = await loginUserToRocketChat(usersData[i]);
@@ -208,7 +209,7 @@ const getChannelList = async(cl)=>{
     return await axios(reqConfig)
 }
 const createRocketChatUserService = async(data)=>{
-    let creatRes = new userSchema(data);
+    let creatRes = new userModel(data);
     let resData = await creatRes.save();
     console.log(resData);
 }
