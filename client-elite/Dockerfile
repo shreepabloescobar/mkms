@@ -13,22 +13,6 @@ RUN groupadd -g 65533 -r rocketchat \
 # --chown requires Docker 17.12 and works only on Linux
 ADD --chown=rocketchat:rocketchat . /app
 
-RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python ca-certificates \
-    && cd /app/bundle/programs/server \
-    && npm install \
-    && apt-mark auto '.*' > /dev/null \
-    && apt-mark manual $aptMark > /dev/null \
-    && find /usr/local -type f -executable -exec ldd '{}' ';' \
-       | awk '/=>/ { print $(NF-1) }' \
-       | sort -u \
-       | xargs -r dpkg-query --search \
-       | cut -d: -f1 \
-       | sort -u \
-       | xargs -r apt-mark manual \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force
-
 USER rocketchat
 
 VOLUME /app/uploads
