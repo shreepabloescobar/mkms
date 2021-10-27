@@ -58,7 +58,7 @@ const createSubBatchService = async()=>{
 
 const getSubBatchData = async()=>{
     try{
-        console.log("---inside----getSubBatchData  --- ");
+        // console.log("---inside----getSubBatchData  --- ");
           var reqConfig = {
             method: 'get',
             url: `${process.env.GET_SUB_BATCH_DATA_URL}=${formatDateYMD(new Date())}`,

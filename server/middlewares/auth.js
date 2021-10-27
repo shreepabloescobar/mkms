@@ -1,3 +1,5 @@
+var jwt = require('jsonwebtoken');
+
 const authenticate = (req, res, next) => {
     const { clientid = '', clientsecret = '' } = req && req.headers;
     if (clientid && clientsecret) {
@@ -17,6 +19,24 @@ const authenticate = (req, res, next) => {
     }
 }
 
+const validateAuthToken = (req,res,next)=>{
+    const { authToken } = req.query || req.body || req.headers
+    if(authToken){
+        jwt.verify(authToken, process.env.SECRET, (err,decoded)=>{
+            if(err){
+                res.status(401).json({message:"Unauthorized: Token Expired or Invalid"})
+            }else{
+                console.log("Token Verification success")
+                next();
+            }
+        });
+    }
+    else{
+        res.status(401).json({message:"Token Missing"})
+    } 
+}
+
 module.exports = {
-    authenticate
+    authenticate,
+    validateAuthToken
 }

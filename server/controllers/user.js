@@ -107,7 +107,6 @@ const welcomePost = async (req, res) => {
 };
 
 const getAllProfiles = async (req, res) => {
-  if (req.query.token) {
     UserSchema.find({ phoneNumber: req.query.MobileNumber }, (err, data) => {
       if (err) {
         return res.status(400).json(err);
@@ -138,11 +137,6 @@ const getAllProfiles = async (req, res) => {
         return res.status(200).json(out_value);
       }
     });
-  } else {
-    return res
-      .status(401)
-      .json({ message: "Unauthorized", error: "Invalid Token" });
-  }
 };
 
 const addNewUser = async (req,res) => {

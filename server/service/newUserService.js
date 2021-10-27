@@ -1,6 +1,7 @@
 const axios = require("axios");
 var CryptoJS = require("crypto-js");
 const UserModel = require("../models/user_mkms");
+
 const getNewUserValues = () => {
   //return axios.post("some_end_point", {"some+params":"param/val"},{"some+header":"header/val"});
   console.log("Promise called");
