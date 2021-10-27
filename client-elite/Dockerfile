@@ -1,6 +1,5 @@
 FROM node:12.22.1-buster-slim
 
-LABEL maintainer="buildmaster@rocket.chat"
 
 # dependencies
 RUN groupadd -g 65533 -r rocketchat \
