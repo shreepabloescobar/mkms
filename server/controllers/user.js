@@ -117,7 +117,7 @@ const getAllProfiles = async (req, res) => {
         };
         data.map((value) => {
           let x = {
-            id: 1,
+            id: value._id,
             userName: value.username,
             userRole: value.roles[0],
             class: "BYJUs Class, Aakash",

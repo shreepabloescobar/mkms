@@ -1,6 +1,5 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
-
 const { swaggerDocument } = require("../swagger/docs");
 const { authenticate, validateAuthToken } = require("../middlewares/auth");
 const userRoutes = require("./user");
@@ -19,7 +18,6 @@ module.exports = (app) =>
         .get("/healthcheck", (req, res) => {
             res.send("Byjus Mentor Konnect Server is up and running");
         })
-        // .use(authenticate)
         .use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
         .use("/user",validateAuthToken, userRoutes())
         .use("/sub-batch", subBatchRoutes())

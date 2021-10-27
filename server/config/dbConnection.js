@@ -29,8 +29,8 @@ function makeNewConnection(uri) {
     return db;
 }
 
-const wrapperConnection = makeNewConnection('mongodb://127.0.0.1:27017/mkms?retryWrites=false');
-const rocketChatConnection = makeNewConnection('mongodb://127.0.0.1:3001/meteor');
+const wrapperConnection = makeNewConnection(process.env.MONGODB_LOCAL_URI);
+const rocketChatConnection = makeNewConnection(process.env.MONGODB_NUCLEUS_URI);
 
 module.exports = {
     wrapperConnection,

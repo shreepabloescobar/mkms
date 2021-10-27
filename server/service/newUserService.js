@@ -57,7 +57,7 @@ const createNew = async () => {
                 console.log("Login Success ",res.data)
                 var userId = res.data.data.userId;
                 var authToken = res.data.data.authToken;
-                var password = CryptoJS.AES.encrypt(
+                var password = CryptoJS.HmacSHA256(
                   email,
                   process.env.SECRET
                 ).toString();

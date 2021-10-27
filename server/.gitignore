@@ -1,6 +1,4 @@
 node_modules
 .env
-
-.npmrc
-
 package-lock.json
+.npmrc

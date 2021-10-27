@@ -1,5 +1,6 @@
 const express = require('express');
 var helmet = require('helmet');
+const MongoClient = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 
 const config = require('./config/environment');
@@ -54,6 +55,10 @@ const {wrapperConnection,rocketChatConnection} = require('./config/dbConnection'
     app.use(helmet());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json({ limit: '10mb' }));
+
+    const { setupSFToken } = require("./src/util");
+    const sfClient = await setupSFToken();
+    global.sfClient = sfClient;
 
     app.use('/nucleusapi/mkms', apiRoutes(app));
 
