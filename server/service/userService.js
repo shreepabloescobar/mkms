@@ -11,7 +11,7 @@ const {
   fetchLoanDataService,
   fetchSalesPersonDetails,
 } = require("./commonServices/dataService");
-
+        
 const logger = require("./logger")("User Service");
 const axios = require("axios");
 // const userSchema = require('../models/user');
