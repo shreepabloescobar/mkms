@@ -56,9 +56,9 @@ const {wrapperConnection,rocketChatConnection} = require('./config/dbConnection'
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json({ limit: '10mb' }));
 
-    const { setupSFToken } = require("./src/util");
-    const sfClient = await setupSFToken();
-    global.sfClient = sfClient;
+    // const { setupSFToken } = require("./src/util");
+    // const sfClient = await setupSFToken();
+    // global.sfClient = sfClient;
 
     app.use('/nucleusapi/mkms', apiRoutes(app));
 

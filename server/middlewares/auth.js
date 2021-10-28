@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+var CryptoJS = require("crypto-js");
 
 const authenticate = (req, res, next) => {
     const { clientid = '', clientsecret = '' } = req && req.headers;
@@ -20,7 +21,7 @@ const authenticate = (req, res, next) => {
 }
 
 const validateAuthToken = (req,res,next)=>{
-    const { authToken } = req.query || req.body || req.headers
+    const authToken  =  req.headers.authtoken
     if(authToken){
         jwt.verify(authToken, process.env.SECRET, (err,decoded)=>{
             if(err){
@@ -36,7 +37,14 @@ const validateAuthToken = (req,res,next)=>{
     } 
 }
 
+const hashPassword = (email) => {
+    return CryptoJS.HmacSHA256(
+    email,
+    process.env.SECRET
+  ).toString();
+}
 module.exports = {
     authenticate,
-    validateAuthToken
+    validateAuthToken,
+    hashPassword
 }

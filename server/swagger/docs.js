@@ -13,7 +13,7 @@ const swaggerDocument = {
     },
     servers: [
         {
-            url: "http://localhost:4000/nucleusapi/mkms",
+            url: "http://localhost:8888/nucleusapi/mkms",
             description: "local",
         },
         process.env.NODE_ENV == 'production' ?
@@ -52,6 +52,11 @@ const swaggerDocument = {
                 name: "clientsecret",
                 in: "header",
             },
+            authtoken: {
+                type: "apiKey",
+                name: "authtoken",
+                in: "header",
+            },
         },
     },
     security: [
@@ -60,6 +65,9 @@ const swaggerDocument = {
         },
         {
             clientsecret: [],
+        },
+        {
+            authtoken: [],
         },
     ],
     schemes: ["https", "http"],

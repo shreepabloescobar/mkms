@@ -38,6 +38,50 @@ const userDocs = {
                 }
             }
         },
+        "/user/getMKAppUsersDetails": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "get MK App Users Details API",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/getMkAppUser"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/user/create-mkms-student": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "create-mkms-student API",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/createMkmsStudent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
         "/user/login-rocket-chat":{
             "post": {
                 "tags": [
@@ -73,7 +117,45 @@ const userDocs = {
                     "example":"9999999999"
                 }
             }
-        }
+        },
+        "getMkAppUser":{
+            "properties":{
+                "url":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"getStudentDetails"
+                },
+                "phone":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"2139391100"
+                },
+                "countryCode":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"+91"
+                }
+            }
+          },
+          "createMkmsStudent":{
+            "properties":{
+                "rocket_user_id":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"rocket_user_id-1"
+                },
+                "premium_id":{
+                    "required":["true"],
+                    "type":"Number",
+                    "example":101
+                },
+                "user_type":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"student"
+                }
+            }
+          }
     }
 }
 

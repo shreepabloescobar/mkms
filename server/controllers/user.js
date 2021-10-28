@@ -1,17 +1,23 @@
+var jwt = require('jsonwebtoken');
 const {
   handleUserLoginService,
   resendOtpService,
   handleUserLoginRocketChatService,
   createRocketChatUserService,
+  getAllProfilesService,
+  getMKAppUsersDetails,
+  createMKMSStudentRelationService
 } = require("../service/userService");
 
-const {
-  createNew
-} = require("../service/newUserService");
+const { createNew } = require("../service/newUserService");
+
+const hashPassword = require("../middlewares/auth");
 
 const logger = require("../service/logger")("User");
 
-const UserSchema = require('../models/user')
+const UserSchema = require("../models/user");
+
+const ApiClient = require("../apiclient/apiclient");
 
 const handleUserLogin = async (req, res) => {
   try {
@@ -107,48 +113,97 @@ const welcomePost = async (req, res) => {
 };
 
 const getAllProfiles = async (req, res) => {
-    UserSchema.find({ phoneNumber: req.query.MobileNumber }, (err, data) => {
-      if (err) {
-        return res.status(400).json(err);
-      } else {
-        let out_value = {
-          helplineNumber: "Some Helpline",
-          student: [],
-        };
-        data.map((value) => {
-          let x = {
-            id: value._id,
-            userName: value.username,
-            userRole: value.roles[0],
-            class: "BYJUs Class, Aakash",
-            avatarURL: "String",
-            avatarColor: "String",
-            avatarTextColor: "String",
-            access: {
-              type: value.type,
-              message: "String",
-              messageType: "Integer",
-            },
-            notificationCount: "Integer",
-            onBoarded: "Boolean",
-          };
-          out_value.student.push(x);
-        });
-        return res.status(200).json(out_value);
-      }
-    });
+  let phone = jwt.verify(req.headers.authtoken, process.env.SECRET).user
+  const response = await getAllProfilesService(phone)
+  return res.status(200).json({data: response})
 };
 
-const addNewUser = async (req,res) => {
-    try{
-      console.log("Adding New User")
-      createNew();
-      return res.status(200).json({status:"OK"})
-    }catch(err){
-      console.log("Error",err)
-    }
-}
+const getUserProfile = async (req, res) => {
+  const { id } = req.body;
+  // console.log("Id",)
+  let userId, rctoken;
+  UserSchema.findOne({ _id: id }, async (err, data) => {
+    if (err) {
+      console.log("No Such Id ", id);
+    } else {
+      let response = await ApiClient(
+        "post",
+        "/login",
+        {
+          user: data.emails[0].address,
+          password: hashPassword.hashPassword(data.emails[0].address),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response)
+      userId = response.data.data.userId;
+      rctoken = response.data.data.authToken;
 
+      response = await ApiClient(
+        "get",
+        "/channels.list.joined",
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Auth-Token": rctoken,
+            "X-User-Id": userId,
+          },
+        }
+      );
+      console.log(response);
+      if (response.status == 200) {
+        return res.json({
+          status: 200,
+          message: "success",
+          helpline: "String",
+          upcomingClassesNotifications: "Integer",
+          performanceNotifications: "Integer",
+          attendanceNotifications: "Integer",
+          chats: response.data.channels,
+        });
+      } else {
+        return res.json({
+          status: 400,
+          message: "failed",
+          data: "cant fetch ",
+        });
+      }
+    }
+  });
+};
+
+const addNewUser = async (req, res) => {
+  try {
+    console.log("Adding New User");
+    createNew();
+    return res.status(200).json({ status: "OK" });
+  } catch (err) {
+    console.log("Error", err);
+  }
+};
+
+const getMKAppUsersDetailsFnc = async (req,res)=>{
+  try{
+    let rsData = await getMKAppUsersDetails(req.body);
+    return res.status(200).json(rsData.data);
+  }catch(err){
+    return res.status(400);
+  }
+}
+const createMKMSStudentRelation = async (req,res)=>{
+  try{
+    let rsData = await createMKMSStudentRelationService(req.body);
+    console.log(rsData)
+    return res.status(200).json(rsData);
+  }catch(err){
+    return res.status(400);
+  }
+}
 
 module.exports = {
   handleUserLogin,
@@ -158,5 +213,9 @@ module.exports = {
   welcome,
   welcomePost,
   getAllProfiles,
+  getUserProfile,
   addNewUser,
+  getMKAppUsersDetailsFnc,
+  createMKMSStudentRelation,
+  
 };

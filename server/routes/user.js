@@ -11,6 +11,9 @@ module.exports = () => {
 	router.get('/welcome', controller.welcome);
 	router.post('/welcomePost', controller.welcomePost);
 	router.get('/getAllProfiles',controller.getAllProfiles);
+	router.post('/getUserProfile',controller.getUserProfile);
 	router.get('/addNewUser',controller.addNewUser)
+	router.post('/getMKAppUsersDetails',controller.getMKAppUsersDetailsFnc);
+	router.post('/create-mkms-student',controller.createMKMSStudentRelation);
 	return router;
 }
