@@ -11,7 +11,7 @@ const setupSFToken = async () => {
 
     if (SalesforceConfig) {
         const { configs = [] } = SalesforceConfig;
-        const config = find(configs, { environment: process.env.NODE_ENV, orgName: process.env.BYJUS_ORG_NAME });
+        const config = find(configs, { environment: process.env.NODE_ENV, orgName: "byjus" });
         const { authUrl, userName, password, clientId, clientSecret } = config;
 
         const sfClient = new Salesforce({
