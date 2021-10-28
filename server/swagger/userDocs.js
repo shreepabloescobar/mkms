@@ -106,6 +106,28 @@ const userDocs = {
                     }
                 }
             }
+        },
+        "/user/update-mkms-student-on-boarding":{
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "update-mkms-student-on-boarding",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/updateMkmsStudentOnBoarding"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
         }
     },
     "definitions":{
@@ -153,6 +175,20 @@ const userDocs = {
                     "required":["true"],
                     "type":"string",
                     "example":"student"
+                }
+            }
+          },
+          "updateMkmsStudentOnBoarding":{
+            "properties":{
+                "rocket_user_id":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"rocket_user_id-1"
+                },
+                "on_board":{
+                    "required":["true"],
+                    "type":"Boolean",
+                    "example":true
                 }
             }
           }

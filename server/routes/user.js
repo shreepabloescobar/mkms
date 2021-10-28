@@ -15,5 +15,6 @@ module.exports = () => {
 	router.get('/addNewUser',controller.addNewUser)
 	router.post('/getMKAppUsersDetails',controller.getMKAppUsersDetailsFnc);
 	router.post('/create-mkms-student',controller.createMKMSStudentRelation);
-	return router;
+	router.post('/update-mkms-student-on-boarding',controller.updateMKMSStudentOnBoarding);
+	return router; 
 }
