@@ -28,6 +28,9 @@
 						<span class="rc-message-box__icon rc-message-box__send js-send" data-desktop>
 							{{> icon block="rc-input__icon-svg" icon="send"}}
 						</span>
+						<span class="rc-message-box__icon rc-message-box__send js-sendPrivate" data-desktop>
+							{{_ "Save as note" }}
+						</span>
 					{{else}}
 						{{# if customAction }}
 							{{> Template.dynamic template=customAction.template data=customAction.data }}

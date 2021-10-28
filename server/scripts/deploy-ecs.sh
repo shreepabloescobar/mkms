@@ -5,7 +5,7 @@ export SERVICE_NAME="development-${MS_NAME}-service"
 export TASK_FAMILY="development-${MS_NAME}-td"
 export FILE_NAME=`echo ${TASK_FAMILY}|sed 's/-/_/g'`
 
-#Register/Update task defintion
+#Register or Update task defintion
 #aws2 ecs register-task-definition --family ${TASK_FAMILY} --cli-input-json "file://${FILE_NAME}.json"
 
 #Get the latest task revision using the describe task defintion

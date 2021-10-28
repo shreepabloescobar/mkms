@@ -44,7 +44,7 @@ const doOtpLogin = async (req, res) => {
         logger.info(`Success otp sent to user mobile ${mobileNo}`);
         return res
           .status(200)
-          .json({ status: "success", appId: response.data.data.appId });
+          .json({ status: 200,message:"success",data:{ appId: response.data.data.appId} });
       } else {
         logger.info(`Error sending otp`);
         return res.status(400).json({
@@ -103,11 +103,40 @@ const validateOtpOnLogin = async (req, res) => {
     process.env.SECRET,
     { expiresIn: '24h' }
   );
-  return res.status(200).json({ status:"Success", user: req.body.MobileNumber, token: token });
+  return res.status(200).json({ status:200,message:"success",data:{ user: req.body.MobileNumber, token: token }});
 };
+
+const requestOtp = async (req, res) => {
+    let { phone } = req.body;
+
+    try {
+        const employeeDetails = await UeEmployee.findOne({ phone });
+        res.status(200).json({
+            data: employeeDetails,
+        });
+    } catch (error) {
+        logger.error("Error in getting getEmployeeDetails", error);
+        return res.status(500).json({ message: "Error in getting details of the employee" });
+    }
+}
+
+// const validateOtp = async (req, res) => {
+//     let { nonce, phone, otp } = req.body;
+
+//     try {
+//         const employeeDetails = await UeEmployee.findOne({ phone });
+//         res.status(200).json({
+//             data: employeeDetails,
+//         });
+//     } catch (error) {
+//         logger.error("Error in getting getEmployeeDetails", error);
+//         return res.status(500).json({ message: "Error in getting details of the employee" });
+//     }
+// }
 
 module.exports = {
   validateOtp,
   doOtpLogin,
   validateOtpOnLogin,
+  requestOtp
 };

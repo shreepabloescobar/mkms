@@ -252,7 +252,7 @@ export class ChatMessages {
 		this.$input.setCursorPosition(cursorPosition);
 	}
 
-	async send(event, { rid, tmid, value, tshow }, done = () => {}) {
+	async send(event, { rid, tmid, value, tshow, isPrivate }, done = () => {}) {
 		const threadsEnabled = settings.get('Threads_enabled');
 
 		UserAction.stop(rid, USER_ACTIVITIES.USER_TYPING, { tmid });
@@ -293,6 +293,7 @@ export class ChatMessages {
 				tshow,
 				tmid,
 				msg,
+				isPrivate,
 			});
 
 			try {

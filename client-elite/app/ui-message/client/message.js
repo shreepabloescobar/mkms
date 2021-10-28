@@ -355,6 +355,11 @@ Template.message.helpers({
 
 		return msg.private || MessageTypes.isSystemMessage(msg);
 	},
+	privateClass() {
+		const { msg } = this;
+
+		return msg.isPrivate ? 'private-note' : '';
+	},
 	actionLinks() {
 		const { msg } = this;
 		// remove 'method_id' and 'params' properties

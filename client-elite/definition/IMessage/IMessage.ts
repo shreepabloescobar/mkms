@@ -31,6 +31,7 @@ type MessageTypesValues =
 | 'room_e2e_enabled'
 | 'room_e2e_disabled'
 | 'livechat-close'
+| 'hand-raised'
 
 
 export interface IMessage extends IRocketChatRecord {
