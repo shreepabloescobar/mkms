@@ -15,7 +15,7 @@ const hashPassword = require("../middlewares/auth");
 
 const logger = require("../service/logger")("User");
 
-const UserSchema = require("../models/user");
+const StudentRelationModel = require("../models/studentRelation");
 
 const ApiClient = require("../apiclient/apiclient");
 
@@ -122,16 +122,17 @@ const getUserProfile = async (req, res) => {
   const { id } = req.body;
   // console.log("Id",)
   let userId, rctoken;
-  UserSchema.findOne({ _id: id }, async (err, data) => {
+  StudentRelationModel.findOne({ premium_id : id }, async (err, data) => {
     if (err) {
       console.log("No Such Id ", id);
     } else {
-      let response = await ApiClient(
+      let user = id+"@byjus-student-rc.com"
+      let response = await ApiClient.MKMS(
         "post",
         "/login",
         {
-          user: data.emails[0].address,
-          password: hashPassword.hashPassword(data.emails[0].address),
+          user: user,
+          password: hashPassword.hashPassword(user),
         },
         {
           headers: {
@@ -143,7 +144,7 @@ const getUserProfile = async (req, res) => {
       userId = response.data.data.userId;
       rctoken = response.data.data.authToken;
 
-      response = await ApiClient(
+      response = await ApiClient.MKMS(
         "get",
         "/channels.list.joined",
         {},
