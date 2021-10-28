@@ -115,7 +115,7 @@ const welcomePost = async (req, res) => {
 const getAllProfiles = async (req, res) => {
   let phone = jwt.verify(req.headers.authtoken, process.env.SECRET).user
   const response = await getAllProfilesService(phone)
-  return res.status(200).json({data: response})
+  return res.status(200).json({status:200, message:"success", data: response})
 };
 
 const getUserProfile = async (req, res) => {
@@ -158,6 +158,24 @@ const getUserProfile = async (req, res) => {
       );
       console.log(response);
       if (response.status == 200) {
+        let chats = []
+        let ret = response.data.channels;
+        ret.map((val)=>{
+          let x = {}
+          x.id = val._id;
+          x.roomId = val.lastMessage.rid;
+          x.channelName = val.name;
+          x.roomtType = "String";
+          x.lastMessage = val.lastMessage;
+          x.access = {
+            "type": "String",
+            "message": "String"
+           };
+           x.avatarUrl = "String";
+           x.unreadCount = "Integer"
+
+           chats.push(x)
+        })
         return res.json({
           status: 200,
           message: "success",
@@ -165,7 +183,9 @@ const getUserProfile = async (req, res) => {
           upcomingClassesNotifications: "Integer",
           performanceNotifications: "Integer",
           attendanceNotifications: "Integer",
-          chats: response.data.channels,
+          userId: userId,
+          rctoken: rctoken,
+          chats: chats,
         });
       } else {
         return res.json({

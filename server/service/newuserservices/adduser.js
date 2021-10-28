@@ -43,6 +43,7 @@ const addNewUser = (name, id, type) => {
       }
     }
   });
+  //return status;
 };
 
 module.exports = addNewUser;

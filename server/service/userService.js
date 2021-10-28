@@ -305,6 +305,7 @@ const getAllProfilesService = async (phone) => {
   };
   if (resultStudentProfile) {
     resultStudentProfile.data.result.map((value) => {
+    addNewUser(value.fullName,value.studentId,"Student")
       let x = {
         id: value.studentId,
         userName: value.fullName,
@@ -319,10 +320,10 @@ const getAllProfilesService = async (phone) => {
           messageType: "Integer",
         },
         notificationCount: "Integer",
-        onBoarded: "Boolean",
+        onBoarded: true,
       };
       out_value.student.push(x);
-      addNewUser(value.fullName,value.studentId,"Student")
+      
     });
   }
   var resultParentProfile = await ApiClient.STMS(
@@ -337,6 +338,7 @@ const getAllProfilesService = async (phone) => {
   );
   if (resultParentProfile) {
       let ret = resultParentProfile.data.result
+      let status = addNewUser(ret.firstName+" "+ret.lastName,ret.customerId,"Parent")
       let x = {
         id: ret.customerId,
         userName: ret.firstName+" "+ret.lastName,
@@ -350,10 +352,10 @@ const getAllProfilesService = async (phone) => {
           messageType: "Integer",
         },
         notificationCount: "Integer",
-        onBoarded: "Boolean",
+        onBoarded: true,
       };
       out_value.parent.push(x);
-      addNewUser(ret.firstName+" "+ret.lastName,ret.customerId,"Parent")
+      
   }
 
   return out_value;
