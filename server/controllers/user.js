@@ -167,7 +167,7 @@ const getUserProfile = async (req, res) => {
           x.id = val._id;
           x.roomId = val.lastMessage.rid;
           x.channelName = val.name;
-          x.roomtType = "String";
+          x.roomType = "String";
           x.lastMessage = val.lastMessage;
           x.access = {
             "type": "String",
