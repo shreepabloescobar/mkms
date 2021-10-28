@@ -6,8 +6,10 @@ const {
   createRocketChatUserService,
   getAllProfilesService,
   getMKAppUsersDetails,
-  createMKMSStudentRelationService
+  createMKMSStudentRelationService,
+  updateMKMSStudentOnBoardingService
 } = require("../service/userService");
+const { GENERAL } = require('../constants/messages')
 
 const { createNew } = require("../service/newUserService");
 
@@ -205,6 +207,16 @@ const createMKMSStudentRelation = async (req,res)=>{
     return res.status(400);
   }
 }
+const updateMKMSStudentOnBoarding = async (req,res)=>{
+  try{
+    let rsData = await updateMKMSStudentOnBoardingService(req.body);
+    
+    return res.status(200).send(GENERAL.UPDATE_SUCCESS);
+  }catch(err){
+    return res.status(400);
+  }
+}
+
 
 module.exports = {
   handleUserLogin,
@@ -218,5 +230,6 @@ module.exports = {
   addNewUser,
   getMKAppUsersDetailsFnc,
   createMKMSStudentRelation,
+  updateMKMSStudentOnBoarding
   
 };

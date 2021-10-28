@@ -378,10 +378,24 @@ const getMKAppUsersDetails = async (reqObj) => {
   return await axios(reqConfig);
 };
 
-const createMKMSStudentRelationService = async (data) => {
-  let creatReq = new studentRelationModel(data);
-  return await creatReq.save();
-};
+const createMKMSStudentRelationService = async(data)=>{
+  try{
+      let creatReq = new studentRelationModel(data);
+      return await creatReq.save();
+  }catch(error){
+      console.log(error);
+      if (error.name === 'MongoError' && error.code === 11000) {
+          throw{msg:'There was a duplicate key error'};
+        } 
+  }
+      
+} 
+
+const updateMKMSStudentOnBoardingService = async(data)=>{
+  let creatReq = await studentRelationModel.update({'rocket_user_id':data['rocket_user_id']},{$set:{'on_board':data['on_board']}});
+  
+  return creatReq;    
+}
 
 module.exports = {
   handleUserLoginService,
@@ -391,4 +405,5 @@ module.exports = {
   getMKAppUsersDetails,
   createMKMSStudentRelationService,
   getAllProfilesService,
+  updateMKMSStudentOnBoardingService
 };
