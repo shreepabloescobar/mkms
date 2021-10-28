@@ -17,6 +17,7 @@ const axios = require("axios");
 // const userSchema = require('../models/user');
 const userModel = require("../models/user");
 const studentRelationModel = require("../models/studentRelation");
+const subBatchModel = require('../models/subBatch');
 const ApiClient = require("../apiclient/apiclient");
 
 const addNewUser = require("../service/newuserservices/adduser");
@@ -281,11 +282,12 @@ const getChannelList = async (cl) => {
   };
   return await axios(reqConfig);
 };
-const createRocketChatUserService = async (data) => {
-  let creatRes = new userModel(data);
-  let resData = await creatRes.save();
-  console.log(resData);
-};
+// const createRocketChatUserService = async (data) => {
+//   let creatRes = new userModel(data);
+//   let resData = await creatRes.save();
+//   console.log(resData);
+// };
+
 
 const getAllProfilesService = async (phone) => {
   var resultStudentProfile = await ApiClient.STMS(
@@ -396,6 +398,20 @@ const updateMKMSStudentOnBoardingService = async(data)=>{
   
   return creatReq;    
 }
+const createRocketChatUserService = async (data) => {
+  console.log("inside  createRocketChatUserService =========");
+  let subBatchArray = await subBatchModel.find({});
+  console.log(subBatchArray[0]);
+  if(subBatchArray.length){
+    let premium_account_ids_Aray = subBatchArray[0]['premium_account_ids'];
+    for(let i = 0; i< premium_account_ids_Aray.length;i++){
+      await addNewUser(`fname lname`,premium_account_ids_Aray[i],"Student")
+    }
+  }
+  
+  return {status:"success"};
+  
+};
 
 module.exports = {
   handleUserLoginService,

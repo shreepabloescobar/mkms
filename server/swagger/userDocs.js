@@ -128,6 +128,28 @@ const userDocs = {
                     }
                 }
             }
+        },
+        "/user/create-rocket-chat-user":{
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "create-rocket-chat-user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/createRocketChatUser"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
         }
     },
     "definitions":{
@@ -179,6 +201,20 @@ const userDocs = {
             }
           },
           "updateMkmsStudentOnBoarding":{
+            "properties":{
+                "rocket_user_id":{
+                    "required":["true"],
+                    "type":"string",
+                    "example":"rocket_user_id-1"
+                },
+                "on_board":{
+                    "required":["true"],
+                    "type":"Boolean",
+                    "example":true
+                }
+            }
+          },
+          "createRocketChatUser":{
             "properties":{
                 "rocket_user_id":{
                     "required":["true"],

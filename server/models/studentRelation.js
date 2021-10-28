@@ -4,19 +4,15 @@ const Schema = mongoose.Schema;
 const {v4: uuidv4} = require('uuid');
 
 let studentRelationSchema = new Schema({
-    _id:{
+    
+    rocketchat_user_id: {
         type: String,
-        required: true,
-        default: uuidv4()
-    },
-    rocket_user_id: {
-        type: String,
-        require: true,
-        unique: true 
+        require: true,        
     },
     premium_id: {
         type: String,
         required: true,
+        unique: true 
     },
     user_type: {
         type: String,

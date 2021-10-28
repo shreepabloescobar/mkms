@@ -3,15 +3,13 @@ const AdminOperations = require("../../admin/adminRocketChat");
 const ApiClient = require("../../apiclient/apiclient");
 const hashPassword = require("../../middlewares/auth");
 
-const addNewUser = (name, id, type) => {
+const addNewUser = async (name, id, type) => {
+  try{
   const rc_user_id = id + "@byjus-student-rc.com";
-  StudentRelationModel.find({ premium_id: id }, async (err, data) => {
-    if (err) {
-      console.log("Error Logged", err.message);
-    } else {
-      if (data.length != 0) {
+  let data = await StudentRelationModel.find({ premium_id: id })
+  if (data.length != 0) {
         console.log("User Exists in DB", data);
-        return;
+        return ;
       } else {
         const adminCreds = await AdminOperations.adminLogin();
         const response = await ApiClient.MKMS(
@@ -34,15 +32,17 @@ const addNewUser = (name, id, type) => {
         );
         if (response.data.user._id) {
           let newUser = {
-            rocketchat_user_id: response.data.user._id,
+            rocketchat_user_id: response.data.user['_id'],
             premium_id: id,
             user_type: type,
           };
-          StudentRelationModel.create(newUser);
+          await StudentRelationModel.create(newUser);
         }
       }
+    }catch(err){
+      console.log("-------in catch----")
+      console.log(err);
     }
-  });
 };
 
 module.exports = addNewUser;
