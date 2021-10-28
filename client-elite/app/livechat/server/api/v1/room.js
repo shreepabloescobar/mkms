@@ -20,52 +20,96 @@ API.v1.addRoute('livechat/room/add', { authRequired: true }, {
 	post() {
 		const fields = getDefaultUserFields();
 		const sessionUser = Users.findOneById(this.userId, { fields });
+		if (!sessionUser || !sessionUser.roles.includes('admin')) {
+			return API.v1.unauthorized();
+		}
 
 		const defaultCheckParams = {
-			rid: Match.Maybe(String),
+			userId: String,
 			agentId: Match.Maybe(String),
-			users: Match.Maybe(Array),
 			roomName: Match.Maybe(String),
 		};
-
 		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
 		check(this.bodyParams, extraCheckParams);
 
-		const { rid: roomId, users: usernames, roomName, ...extraParams } = this.bodyParams;
-		const token = sessionUser._id;
-		const guestName = roomName ? { name: roomName } : {};
-		const visitorId = Livechat.registerGuest({
-			...sessionUser,
-			token,
-			...guestName,
-		});
+		const { userId, agentId, roomName, ...extraParams } = this.bodyParams;
+		const user = Users.findOneById(userId, { fields });
+
+		const token = user._id;
+		const rName = roomName || user.name;
+		const visitorId = Livechat.registerGuest({ ...user, token, name: rName });
 		const guest = LivechatVisitors.findOneById(visitorId);
 
 		let room;
 		room = LivechatRooms.findOneByVisitorToken(token);
 		if (room) {
-			if (room.closedAt) {
-				Promise.await(QueueManager.unarchiveRoom({ ...room, servedBy: null }));
-				// addUserToRoom(room._id, sessionUser, sessionUser);
-			}
-			Users.findByUsernamesIgnoringCase(usernames).forEach((user) => addUserToRoom(room._id, user, user));
+			addUserToRoom(room._id, user);
 			return API.v1.success({ room, newRoom: false });
 		}
 
 		const rid = Random.id();
 		const roomInfo = {
-			fname: roomName || sessionUser.name,
+			fname: rName,
 			source: {
 				type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 			},
 		};
 
-		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
-		room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraParams));
+		room = LivechatRooms.findOneById(createLivechatRoom(rid, rName, guest, roomInfo, extraParams));
 		LivechatRooms.updateRoomCount();
 
-		Users.findByUsernamesIgnoringCase(usernames).forEach((user) => addUserToRoom(room._id, user, user));
-		// addUserToRoom(room._id, user, user);
+		addUserToRoom(room._id, user);
+		return API.v1.success({ room, newRoom: true });
+	},
+});
+
+API.v1.addRoute('livechat/group/add', { authRequired: true }, {
+	post() {
+		const fields = getDefaultUserFields();
+		const sessionUser = Users.findOneById(this.userId, { fields });
+		if (!sessionUser || !sessionUser.roles.includes('admin')) {
+			return API.v1.unauthorized();
+		}
+
+		const defaultCheckParams = {
+			userIds: Match.Maybe(Array),
+			batchId: String,
+			subBatchId: String,
+			agentId: Match.Maybe(String),
+			roomName: Match.Maybe(String),
+		};
+		const extraCheckParams = onCheckRoomParams(defaultCheckParams);
+		check(this.bodyParams, extraCheckParams);
+
+		const { userIds, batchId, subBatchId, agentId, roomName, ...extraParams } = this.bodyParams;
+		const batchToken = `batch-${ batchId }-${ subBatchId }`;
+		const rName = roomName || batchToken.toUpperCase();
+		const visitorId = Livechat.registerGuest({
+			username: batchToken,
+			token: batchToken,
+			name: rName,
+		});
+		const guest = LivechatVisitors.findOneById(visitorId);
+
+		let room;
+		room = LivechatRooms.findOneByVisitorToken(batchToken);
+		if (room) {
+			Users.findByIds(userIds).forEach((user) => addUserToRoom(room._id, user));
+			return API.v1.success({ room, newRoom: false });
+		}
+
+		const rid = Random.id();
+		const roomInfo = {
+			fname: rName,
+			source: {
+				type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+			},
+		};
+
+		room = LivechatRooms.findOneById(createLivechatRoom(rid, rName, guest, roomInfo, extraParams));
+		LivechatRooms.updateRoomCount();
+
+		Users.findByIds(userIds).forEach((user) => addUserToRoom(room._id, user));
 		return API.v1.success({ room, newRoom: true });
 	},
 });
