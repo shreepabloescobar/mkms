@@ -103,6 +103,27 @@ Template.messageBox.onCreated(function() {
 			input.focus();
 		});
 	};
+
+	this.sendPrivate = (event) => {
+		const { input } = this;
+
+		if (!input) {
+			return;
+		}
+
+		const { autogrow, data: { rid, tmid, onSend, tshow } } = this;
+		const { value } = input;
+		this.set('');
+
+		if (!onSend) {
+			return;
+		}
+
+		onSend.call(this.data, event, { rid, tmid, value, tshow, isPrivate: true }, () => {
+			autogrow.update();
+			input.focus();
+		});
+	};
 });
 
 Template.messageBox.onRendered(function() {
@@ -447,6 +468,9 @@ Template.messageBox.events({
 	},
 	async 'click .js-send'(event, instance) {
 		instance.send(event);
+	},
+	async 'click .js-sendPrivate'(event, instance) {
+		instance.sendPrivate(event);
 	},
 	'click .js-action-menu'(event, instance) {
 		const groups = messageBox.actions.get();

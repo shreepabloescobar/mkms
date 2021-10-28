@@ -16,6 +16,9 @@ function getNameOfUsername(users, username) {
 }
 
 export const normalizeMessagesForUser = (messages, uid) => {
+	const user = Users.findOneById(uid, { username: 1, roles: 1 });
+	messages = messages.filter((message) => !message.isPrivate || user.roles.includes('livechat-agent'));
+
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {
 		return messages.map((message) => filterStarred(message, uid));

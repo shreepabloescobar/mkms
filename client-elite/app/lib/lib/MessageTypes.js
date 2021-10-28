@@ -239,6 +239,16 @@ Meteor.startup(function() {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'hand-raised',
+		system: true,
+		message: 'Hand_raised_by__username__',
+		data(message) {
+			return {
+				username: message.u.username,
+			};
+		},
+	});
 });
 
 export const MessageTypesValues = [

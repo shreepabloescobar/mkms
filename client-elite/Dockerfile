@@ -1,23 +1,32 @@
-version: '2'
+FROM node:12.22.1-buster-slim
 
- services:
-   rocketchat:
-     image: rocket.chat:latest
-     command: >
-       bash -c
-         "for i in `seq 1 30`; do
-           node main.js &&
-           s=$$? && break || s=$$?;
-           echo \"Tried $$i times. Waiting 5 secs...\";
-           sleep 5;
-         done; (exit $$s)"
-     restart: unless-stopped
-     volumes:
-       - ./uploads:/app/uploads
-     environment:
-       - PORT=3000
-       - ROOT_URL=http://rnd-mentor-konnect.byjuslabs.com
-       - MONGO_URL=mongodb+srv://admin:5XS35CJ11OqfEwjO@cluster0.fynrx.mongodb.net/rocketchat?retryWrites=true&w=majority
-       - MONGO_OPLOG_URL=mongodb+srv://admin:5XS35CJ11OqfEwjO@cluster0.fynrx.mongodb.net/local?retryWrites=true&w=majority
-     ports:
-       - 80:3000
+
+# dependencies
+RUN groupadd -g 65533 -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat \
+    && mkdir -p /app/uploads \
+    && chown rocketchat:rocketchat /app/uploads \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends fontconfig
+
+# --chown requires Docker 17.12 and works only on Linux
+ADD --chown=rocketchat:rocketchat . /app
+
+USER rocketchat
+
+VOLUME /app/uploads
+
+WORKDIR /app/bundle
+
+# needs a mongoinstance - defaults to container linking with alias 'mongo'
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads
+
+EXPOSE 3000
+
+CMD ["node", "main.js"]
