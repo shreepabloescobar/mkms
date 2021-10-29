@@ -11,13 +11,13 @@ const {
   fetchLoanDataService,
   fetchSalesPersonDetails,
 } = require("./commonServices/dataService");
-        
+
 const logger = require("./logger")("User Service");
 const axios = require("axios");
 // const userSchema = require('../models/user');
 const userModel = require("../models/user");
 const studentRelationModel = require("../models/studentRelation");
-const subBatchModel = require('../models/subBatch');
+const subBatchModel = require("../models/subBatch");
 const ApiClient = require("../apiclient/apiclient");
 
 const addNewUser = require("../service/newuserservices/adduser");
@@ -288,7 +288,6 @@ const getChannelList = async (cl) => {
 //   console.log(resData);
 // };
 
-
 const getAllProfilesService = async (phone) => {
   var resultStudentProfile = await ApiClient.STMS(
     "post",
@@ -300,32 +299,32 @@ const getAllProfilesService = async (phone) => {
       },
     }
   );
-  let out_value = {
+  var out_value = {
     helplineNumber: "Some Helpline",
     student: [],
     parent: [],
   };
   if (resultStudentProfile) {
-    resultStudentProfile.data.result.map((value) => {
-    addNewUser(value.fullName,value.studentId,"Student")
-      let x = {
-        id: value.studentId,
-        userName: value.fullName,
-        userRole: "Student",
-        class: "BYJUs Class",
-        avatarURL: "String",
-        avatarColor: "String",
-        avatarTextColor: "String",
-        access: {
-          type: value.type,
-          message: "String",
-          messageType: "Integer",
-        },
-        notificationCount: "Integer",
-        onBoarded: true,
-      };
-      out_value.student.push(x);
-      
+    resultStudentProfile.data.result.map(async (value) => {
+      await addNewUser(value.fullName, value.studentId, "Student").then((res) => {
+        let x = {
+          id: value.studentId,
+          userName: value.fullName,
+          userRole: "Student",
+          class: "BYJUs Class",
+          avatarURL: "String",
+          avatarColor: "String",
+          avatarTextColor: "String",
+          access: {
+            type: value.type,
+            message: "String",
+            messageType: "Integer",
+          },
+          notificationCount: "Integer",
+          onBoarded: res,
+        };
+        out_value.student.push(x);
+      });
     });
   }
   var resultParentProfile = await ApiClient.STMS(
@@ -339,11 +338,15 @@ const getAllProfilesService = async (phone) => {
     }
   );
   if (resultParentProfile) {
-      let ret = resultParentProfile.data.result
-      let status = addNewUser(ret.firstName+" "+ret.lastName,ret.customerId,"Parent")
+    let ret = resultParentProfile.data.result;
+    await addNewUser(
+      ret.firstName + " " + ret.lastName,
+      ret.customerId,
+      "Parent"
+    ).then((res) => {
       let x = {
         id: ret.customerId,
-        userName: ret.firstName+" "+ret.lastName,
+        userName: ret.firstName + " " + ret.lastName,
         userRole: "Parent",
         avatarURL: "String",
         avatarColor: "String",
@@ -354,10 +357,10 @@ const getAllProfilesService = async (phone) => {
           messageType: "Integer",
         },
         notificationCount: "Integer",
-        onBoarded: true,
+        onBoarded: res,
       };
       out_value.parent.push(x);
-      
+    });
   }
 
   return out_value;
@@ -382,37 +385,38 @@ const getMKAppUsersDetails = async (reqObj) => {
   return await axios(reqConfig);
 };
 
-const createMKMSStudentRelationService = async(data)=>{
-  try{
-      let creatReq = new studentRelationModel(data);
-      return await creatReq.save();
-  }catch(error){
-      console.log(error);
-      if (error.name === 'MongoError' && error.code === 11000) {
-          throw{msg:'There was a duplicate key error'};
-        } 
+const createMKMSStudentRelationService = async (data) => {
+  try {
+    let creatReq = new studentRelationModel(data);
+    return await creatReq.save();
+  } catch (error) {
+    console.log(error);
+    if (error.name === "MongoError" && error.code === 11000) {
+      throw { msg: "There was a duplicate key error" };
+    }
   }
-      
-} 
+};
 
-const updateMKMSStudentOnBoardingService = async(data)=>{
-  let creatReq = await studentRelationModel.update({'rocket_user_id':data['rocket_user_id']},{$set:{'on_board':data['on_board']}});
-  
-  return creatReq;    
-}
+const updateMKMSStudentOnBoardingService = async (data) => {
+  let creatReq = await studentRelationModel.update(
+    { rocket_user_id: data["rocket_user_id"] },
+    { $set: { on_board: data["on_board"] } }
+  );
+
+  return creatReq;
+};
 const createRocketChatUserService = async (data) => {
   console.log("inside  createRocketChatUserService =========");
   let subBatchArray = await subBatchModel.find({});
   console.log(subBatchArray[0]);
-  if(subBatchArray.length){
-    let premium_account_ids_Aray = subBatchArray[0]['premium_account_ids'];
-    for(let i = 0; i< premium_account_ids_Aray.length;i++){
-      await addNewUser(`fname lname`,premium_account_ids_Aray[i],"Student")
+  if (subBatchArray.length) {
+    let premium_account_ids_Aray = subBatchArray[0]["premium_account_ids"];
+    for (let i = 0; i < premium_account_ids_Aray.length; i++) {
+      await addNewUser(`fname lname`, premium_account_ids_Aray[i], "Student");
     }
   }
-  
-  return {status:"success"};
-  
+
+  return { status: "success" };
 };
 
 module.exports = {
@@ -423,5 +427,5 @@ module.exports = {
   getMKAppUsersDetails,
   createMKMSStudentRelationService,
   getAllProfilesService,
-  updateMKMSStudentOnBoardingService
+  updateMKMSStudentOnBoardingService,
 };
